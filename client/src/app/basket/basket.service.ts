@@ -3,8 +3,8 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
-import { IProduct } from '../models/product';
 import { Basket, IBasket, IBasketItem, IBasketTotals } from '../shared/models/basket';
+import { IProduct } from '../shared/models/product';
 
 @Injectable({
   providedIn: 'root'
@@ -25,7 +25,7 @@ export class BasketService {
           this.basketSource.next(basket);
           this.calculateTotals();
         })
-      );
+      )
   }
 
   setBasket(basket: IBasket) {
@@ -34,7 +34,7 @@ export class BasketService {
       this.calculateTotals();
     }, error => {
       console.log(error);
-    });
+    })
   }
 
   getCurrentBasketValue() {
@@ -65,6 +65,7 @@ export class BasketService {
       this.removeItemFromBasket(item);
     }
   }
+
   removeItemFromBasket(item: IBasketItem) {
     const basket = this.getCurrentBasketValue();
     if (basket.items.some(x => x.id === item.id)) {
@@ -76,14 +77,15 @@ export class BasketService {
       }
     }
   }
+
   deleteBasket(basket: IBasket) {
-    return this.http.delete(this.baseUrl + 'baslet?id=' + basket.id).subscribe(() => {
+    return this.http.delete(this.baseUrl + 'basket?id=' + basket.id).subscribe(() => {
       this.basketSource.next(null);
       this.basketTotalSource.next(null);
       localStorage.removeItem('basket_id');
     }, error => {
       console.log(error);
-    });
+    })
   }
 
   private calculateTotals() {
@@ -91,9 +93,10 @@ export class BasketService {
     const shipping = 0;
     const subtotal = basket.items.reduce((a, b) => (b.price * b.quantity) + a, 0);
     const total = subtotal + shipping;
-    this.basketTotalSource.next({shipping, total, subtotal});
+    this.basketTotalSource.next({ shipping, total, subtotal });
   }
-  
+
+
   private addOrUpdateItem(items: IBasketItem[], itemToAdd: IBasketItem, quantity: number): IBasketItem[] {
     const index = items.findIndex(i => i.id === itemToAdd.id);
     if (index === -1) {
@@ -104,7 +107,7 @@ export class BasketService {
     }
     return items;
   }
-  
+
   private createBasket(): IBasket {
     const basket = new Basket();
     localStorage.setItem('basket_id', basket.id);
@@ -120,6 +123,6 @@ export class BasketService {
       quantity,
       brand: item.productBrand,
       type: item.productType
-    };
+    }
   }
 }
